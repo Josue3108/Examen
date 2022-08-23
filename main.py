@@ -5,14 +5,18 @@ from tkinter import *
 movie_files = []
 client_files = []
 
-
 # Registra la pelicula
 def register_movie(name, code, genre, price):#Recibe el nombre, el codigo, el genero y el precio de la pelicula
     film = Movie()#Crea un objeto "Movie"
-    film.__int__(name, code, genre, price)#Escribe los datos dentro del objeto "Movie"
+    film.__int1__(name, code, genre, price)#Escribe los datos dentro del objeto "Movie"
 
     return film #Retorna el objeto creado
 
+def register_movie1(name, code, genre, price,rented):#Recibe el nombre, el codigo, el genero y el precio de la pelicula
+    film = Movie()#Crea un objeto "Movie"
+    film.__int1__(name, code, genre, price,rented)#Escribe los datos dentro del objeto "Movie"
+
+    return film #Retorna el objeto creado
 
 # Registra el cliente
 def register_client(name, id):#Recibe el nombre y la cedula del cliente
@@ -21,6 +25,12 @@ def register_client(name, id):#Recibe el nombre y la cedula del cliente
 
     return client #Retorna el objeto creado
 
+# Registra el cliente
+def register_client1(name, id, list):#Recibe el nombre y la cedula del cliente
+    client = Client()#Crea un objeto "Client"
+    client.__int1__(name, id, list)#Escribe los datos dentro del objeto "Client"
+
+    return client #Retorna el objeto creado
 
 class Movie: #Clase "Movie"
 
@@ -31,6 +41,12 @@ class Movie: #Clase "Movie"
         self.Movie_price = price
         self.Movie_is_rented = False
 
+    def __int1__(self, name, code, genre, price, bol): #Crea los datos de la clase
+        self.Movie_name = name
+        self.Movie_code = code
+        self.Movie_genre = genre
+        self.Movie_price = price
+        self.Movie_is_rented = bol
     def is_rented(self): #Cambia el estado de no alquilado a alquilado
         self.Movie_is_rented = True
 
@@ -45,6 +61,11 @@ class Client: #Clase "Client"
         self.Client_id = id
         self.Client_movie_rented = []
 
+    def __int1__(self, name, id, list): #Crea los datos de la clase
+        self.Client_name = name
+        self.Client_id = id
+        self.Client_movie_rented = list
+
     def rent_movie(self, movie_code): #Asigna una pelicula alquilada
         self.Client_movie_rented.append(movie_code)
 
@@ -57,11 +78,26 @@ class Client: #Clase "Client"
 
 def save_client(): #Guarda los clientes
     #Obtiene los datos de los Entry
-    name = entry_nameC.get() + entry_lastnameC.get()
+    name = entry_nameC.get() + " " + entry_lastnameC.get()
     id = entry_idC.get()
     client_files.append(register_client(name, id))#Llama a la funcion registrar cliente y la guarda en la lista
-    print(client_files[0].Client_id)
+    client_write = open('clients.txt', 'a')
+    client_write.write(client_files[-1].Client_id + '\n')
+    client_write.write(client_files[-1].Client_name + '\n')
+    client_write.write(str(client_files[-1].Client_movie_rented) + '\n')
+    client_write.close()
 
+def save_client1(id,name,rented_movies): #Guarda los clientes
+    list = []
+    code = ""
+    for i in range(1,len(rented_movies)):
+        if rented_movies[i] != '[' and rented_movies[i] != ']' and rented_movies[i] == ',':
+            code = code + rented_movies[i]
+        else:
+            list.append(code)
+            code = ''
+
+    client_files.append(register_client1(name, id, list))#Llama a la funcion registrar cliente y la guarda en la lista
 
 def save_movie():#Guarda las peliculas creadas
     #Obtiene los datos de los Entry
@@ -71,7 +107,19 @@ def save_movie():#Guarda las peliculas creadas
     price = entry_Price.get()
     movie_files.append(register_movie(name, code, genre, price))#Llama a la funcion registrar pelicula y la guarda en la lista
     print(movie_files[0].Movie_name)
+    movie_write = open('movie.txt', 'a')
+    movie_write.write(movie_files[-1].Movie_code + '\n')
+    movie_write.write(movie_files[-1].Movie_name + '\n')
+    movie_write.write(movie_files[-1].Movie_genre + '\n')
+    movie_write.write(movie_files[-1].Movie_price + '\n')
+    movie_write.write(str(movie_files[-1].Movie_is_rented) + '\n')
+    movie_write.close()
 
+def save_movie1(name,code,genre,price,rented):#Guarda las peliculas creadas
+    bol = False
+    if rented == "True":
+        bol = True
+    movie_files.append(register_movie1(name, code, genre, price, bol))#Llama a la funcion registrar pelicula y la guarda en la lista
 
 def rent_movie():
     #Crea variables
@@ -141,6 +189,56 @@ def see_movies():#
         else:
             print("Cliente no registrado")
             break
+
+
+def init():
+    i = 0
+    a = 0
+    id = ''
+    name = ''
+    rented_movies = ''
+    code = ''
+    genre = ''
+    price = ''
+    rented = ''
+    clients_read = open('clients.txt', 'r')
+    movies_read = open('movie.txt', 'r')
+    readC = clients_read.readlines()
+    readM = movies_read.readlines()
+
+    for lineC in readC:
+        if lineC[-1] == '\n':
+            if i == 0:
+                id = lineC[:-1]
+                i = i + 1
+            elif i == 1:
+                name = lineC[:-1]
+                i = i + 1
+            else:
+                rented_movies = lineC[:-1]
+                i = 0
+                save_client1(id,name,rented_movies)
+    for lineC in readC:
+        if lineC[-1] == '\n':
+            if a == 0:
+                code = lineC[:-1]
+                a = a + 1
+            elif a == 1:
+                name = lineC[:-1]
+                a = a + 1
+            elif a == 2:
+                genre = lineC[:-1]
+                a = a + 1
+            elif a == 3:
+                price = lineC[:-1]
+                a = a + 1
+            else:
+                rented = lineC[:-1]
+                a = 0
+                save_movie1(code,name,genre,price,rented)
+
+
+
 
 
 # Crea la ventana
@@ -219,5 +317,7 @@ entry_see.place(x=200, y=160)
 
 myButton1 = tkinter.Button(myFrame, text="Enseñar", command=see_movies)
 myButton1.place(x=340, y=150)
+
+init()
 
 window.mainloop()
