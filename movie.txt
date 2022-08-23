@@ -3,3 +3,8 @@ Pollo
 Comedia
 9999
 False
+1
+1
+1
+1
+False

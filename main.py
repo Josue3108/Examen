@@ -8,7 +8,7 @@ client_files = []
 # Registra la pelicula
 def register_movie(name, code, genre, price):#Recibe el nombre, el codigo, el genero y el precio de la pelicula
     film = Movie()#Crea un objeto "Movie"
-    film.__int1__(name, code, genre, price)#Escribe los datos dentro del objeto "Movie"
+    film.__int__(name, code, genre, price)#Escribe los datos dentro del objeto "Movie"
 
     return film #Retorna el objeto creado
 
@@ -98,7 +98,9 @@ def save_client1(id,name,rented_movies): #Guarda los clientes
             code = ''
 
     client_files.append(register_client1(name, id, list))#Llama a la funcion registrar cliente y la guarda en la lista
-
+    print(client_files[0].Client_name)
+    print(client_files[0].Client_id)
+    print(client_files[0].Client_movie_rented)
 def save_movie():#Guarda las peliculas creadas
     #Obtiene los datos de los Entry
     name = entry_nameM.get()
@@ -191,7 +193,8 @@ def see_movies():#
             break
 
 
-def init():
+def init():#lee los archivos de texto
+    #Crea las variables
     i = 0
     a = 0
     id = ''
@@ -201,12 +204,13 @@ def init():
     genre = ''
     price = ''
     rented = ''
+    #abre los archivos de texto
     clients_read = open('clients.txt', 'r')
     movies_read = open('movie.txt', 'r')
     readC = clients_read.readlines()
     readM = movies_read.readlines()
 
-    for lineC in readC:
+    for lineC in readC:# Obtiene los valores de los clientes
         if lineC[-1] == '\n':
             if i == 0:
                 id = lineC[:-1]
@@ -218,7 +222,7 @@ def init():
                 rented_movies = lineC[:-1]
                 i = 0
                 save_client1(id,name,rented_movies)
-    for lineC in readC:
+    for lineC in readM:# Obtiene los valores de las peliculas
         if lineC[-1] == '\n':
             if a == 0:
                 code = lineC[:-1]
@@ -235,10 +239,7 @@ def init():
             else:
                 rented = lineC[:-1]
                 a = 0
-                save_movie1(code,name,genre,price,rented)
-
-
-
+                save_movie1(name,code,genre,price,rented)
 
 
 # Crea la ventana
